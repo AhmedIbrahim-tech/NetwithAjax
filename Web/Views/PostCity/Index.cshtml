@@ -1,0 +1,71 @@
+﻿@model Web.ViewModel.CountryCityVM
+
+<h1 class="jumbotron d-flex justify-content-center">USING JQUERY AJAX "GET & POST" IN ASP.NET CORE</h1>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6">
+            <label class="col-form-label">Country</label>
+            <select class="form-control country" asp-for="CountryId" asp-items="@(new SelectList(Model.Countries,"Id","Name"))"></select>
+            <label class="col-form-label">City</label>
+            <select class="form-control city"></select>
+            <label class="col-form-label">User Name</label>
+            <input class="form-control user" placeholder="User Name" />
+            <button class="btn btn-dark btn-block mt-4 save">Save</button>
+        </div>
+        <div class="col-md-6">
+            <table class="table table-hover table-dark">
+                <thead>
+                    <tr>
+                        <th scope="col">User Name</th>
+                        <th scope="col">City Name</th>
+                        <th scope="col">Country Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+</div>
+@section Scripts{
+
+<script>
+
+
+    $(".country").on("change",function () {
+        let id = $(".country option:selected").val();
+        $.ajax({
+            type: "GET",
+            url: "/PostCity/GetCities",
+            data: { CountryId: id },
+            success: function (data) {
+                let items = '';
+                $.each(data, function (i, city) {
+                    items += '<option value="' + city.value + '">' + city.text + "</option>";
+                });
+                $(".city").html(items);
+            }
+        })
+    })
+
+    $(".save").click(function () {
+        let user = $(".user").val();
+        let cityId = $(".city option:selected").val();
+        let cityname = $(".city option:selected").text();
+        let countryname = $(".country option:selected").text();
+        $.ajax({
+            url: "/PostCity/AddUser",
+            type: "POST",
+            data: { username: user, cid: cityId },
+            success: function (data) {
+                let tr = "<tr><td>" + user + "</td> <td>" + cityname + "</td> <td>" + countryname + "</td></tr>";
+                $("tbody").append(tr);
+            }
+        })
+    })
+
+
+</script>
+}
